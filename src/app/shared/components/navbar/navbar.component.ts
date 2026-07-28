@@ -13,16 +13,17 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
   template: `
     <header class="navbar-container">
       <div class="navbar-left">
-        <button type="button" class="menu-toggle-btn" (click)="toggleSidebar.emit()" title="Alternar menú móvil">
+        <button type="button" class="menu-toggle-btn" (click)="toggleSidebar.emit()" title="Alternar menú lateral">
           <span class="material-icons">menu</span>
         </button>
-        <div class="brand">
-          <span class="brand-text">Recordatorios</span>
-          <span class="brand-badge">PWA</span>
+        
+        <div class="brand-group">
+          <span class="brand-name">Seguimiento de Solicitudes</span>
+          <span class="brand-tag">v4.8 ENTERPRISE</span>
         </div>
       </div>
 
-      <!-- BANNERS DE ALERTAS CRÍTICAS / RECORDATORIOS -->
+      <!-- BANNERS DE ALERTAS CRÍTICAS / RECORDATORIOS EN NAVBAR -->
       <div class="navbar-center">
         @for (alert of store.activeAlerts(); track alert.type) {
           <div class="alert-banner" [style.background-color]="alert.color">
@@ -33,15 +34,15 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
       </div>
 
       <div class="navbar-right">
-        <!-- BOTÓN INSTALAR PWA SI ESTÁ DISPONIBLE -->
+        <!-- BOTÓN INSTALAR PWA -->
         @if (pwaService.canInstall()) {
           <button type="button" class="install-pwa-btn" (click)="pwaService.installPwa()" title="Instalar Aplicación en este dispositivo">
-            <span class="material-icons">get_app</span>
+            <span class="material-icons">install_mobile</span>
             <span class="btn-label">Instalar App</span>
           </button>
         }
 
-        <!-- BOTÓN NOTIFICACIONES Y ALARMA 9:00 AM -->
+        <!-- BOTÓN ALARMA 9:00 AM -->
         <button 
           type="button" 
           class="icon-btn notif-btn" 
@@ -51,14 +52,14 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
           <span class="material-icons">notifications_active</span>
         </button>
 
-        <!-- ESTADO DE CONEXIÓN E INDEXEDDB -->
+        <!-- INDICADOR INDEXEDDB -->
         <div class="sync-indicator hide-mobile" title="Sincronización activa con Google Sheets & IndexedDB">
           <span class="dot-online"></span>
-          <span>IndexedDB</span>
+          <span>IndexedDB en vivo</span>
         </div>
 
-        <!-- BOTÓN MODO OSCURO -->
-        <button type="button" class="icon-btn" (click)="toggleDarkMode()" title="Modo Oscuro">
+        <!-- MODO OSCURO -->
+        <button type="button" class="icon-btn" (click)="toggleDarkMode()" title="Cambiar Tema">
           <span class="material-icons">{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</span>
         </button>
       </div>
@@ -67,13 +68,15 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
   styles: [`
     .navbar-container {
       height: 64px;
-      background: #FFFFFF;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      padding: 0 20px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -81,10 +84,10 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
     .navbar-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
     .menu-toggle-btn {
-      background: #F1F5F9;
+      background: #F8FAFC;
       border: 1px solid #E2E8F0;
       color: #0F172A;
       cursor: pointer;
@@ -93,36 +96,38 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
       justify-content: center;
       padding: 8px;
       border-radius: 10px;
-      transition: background 0.15s ease;
+      transition: all 0.15s ease;
     }
     .menu-toggle-btn:hover {
       background: #E2E8F0;
+      transform: scale(1.03);
     }
-    .brand {
+    .brand-group {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
-    .brand-text {
-      font-size: 18px;
+    .brand-name {
+      font-size: 16px;
       font-weight: 800;
-      letter-spacing: -0.5px;
       color: #0F172A;
+      letter-spacing: -0.3px;
     }
-    .brand-badge {
-      background: #2563EB;
-      color: #FFFFFF;
-      font-size: 9px;
+    .brand-tag {
+      background: #EFF6FF;
+      color: #2563EB;
+      border: 1px solid #BFDBFE;
+      font-size: 10px;
       font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 2px 7px;
+      border-radius: 6px;
       letter-spacing: 0.5px;
     }
     .navbar-center {
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      max-width: 40%;
+      max-width: 45%;
     }
     .alert-banner {
       color: #FFFFFF;
@@ -145,7 +150,7 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
       background: linear-gradient(135deg, #10B981 0%, #059669 100%);
       color: #FFFFFF;
       border: none;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 800;
@@ -153,23 +158,17 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
       align-items: center;
       gap: 6px;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-      animation: pulseBtn 2s infinite;
-    }
-    @keyframes pulseBtn {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.04); }
-      100% { transform: scale(1); }
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
     .sync-indicator {
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       color: #16A34A;
       background: #F0FDF4;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 20px;
       border: 1px solid #DCFCE7;
     }
@@ -178,9 +177,10 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
       height: 8px;
       background: #16A34A;
       border-radius: 50%;
+      box-shadow: 0 0 8px rgba(22, 163, 74, 0.6);
     }
     .icon-btn {
-      background: #F1F5F9;
+      background: #F8FAFC;
       border: 1px solid #E2E8F0;
       width: 38px;
       height: 38px;
@@ -190,7 +190,7 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
     .icon-btn:hover {
       background: #E2E8F0;
@@ -203,7 +203,7 @@ import { PwaNotificationService } from '../../../core/services/pwa-notification.
     }
     @media (max-width: 640px) {
       .hide-mobile { display: none; }
-      .brand-badge { display: none; }
+      .brand-tag { display: none; }
       .navbar-center { display: none; }
       .btn-label { display: none; }
     }

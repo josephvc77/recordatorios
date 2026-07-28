@@ -33,17 +33,17 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       <div class="page-header">
         <div>
           <h1 class="page-title">Listado Principal de Solicitudes</h1>
-          <p class="page-subtitle">Visualización en el orden exacto especificado con indicadores y semáforos visuales</p>
+          <p class="page-subtitle">Gestión centralizada de expedientes, semáforo de vencimientos y clasificación</p>
         </div>
         @if (authService.hasPermission('crear_solicitud')) {
-          <button class="btn-primary" (click)="openCreateModal()">
-            <span class="material-icons">add</span> Nueva Solicitud
+          <button class="btn-premium-primary" (click)="openCreateModal()">
+            <span class="material-icons">add_task</span> Nueva Solicitud
           </button>
         }
       </div>
 
-      <!-- BARRA MULTIFILTRO Y BÚSQUEDA -->
-      <div class="filter-toolbar">
+      <!-- BARRA MULTIFILTRO Y BÚSQUEDA SAAS -->
+      <div class="filter-toolbar card-enterprise">
         <div class="search-box">
           <span class="material-icons search-icon">search</span>
           <input 
@@ -88,173 +88,175 @@ import { RequestFormComponent } from '../request-form/request-form.component';
         </div>
       </div>
 
-      <!-- TABLA PRINCIPAL DE REGISTROS CON ORDEN EXACTO DE COLUMNAS -->
-      <div class="table-container">
-        <table class="m3-table">
-          <thead>
-            <tr>
-              <th>SEMÁFORO</th>
-              <th>SOLICITUD</th>
-              <th class="col-area-header">ÁREA TURNADA</th>
-              <th>RECORDATORIO</th>
-              <th>DÍAS</th>
-              <th>FECHA VENCIMIENTO</th>
-              <th>ESTATUS</th>
-              <th class="col-tema-header">TEMA</th>
-              <th>OBSERVACIONES</th>
-              <th>IP / DP</th>
-              <th>FOLIO</th>
-              <th>FECHA ENTRADA</th>
-              <th>FECHA TÉRMINO</th>
-              <th class="text-right">ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of store.filteredRequests(); track item.id) {
-              <tr [class.urgent-row]="item.showAlertIcon">
-                <!-- 1. SEMÁFORO -->
-                <td>
-                  <app-priority-badge 
-                    [priorityKey]="item.priorityKey || 'NORMAL'" 
-                    [message]="item.priorityLabel || 'Normal'" 
-                    [colorHex]="item.visualColorHex || '#6B7280'"
-                    [showAlertIcon]="item.showAlertIcon || false">
-                  </app-priority-badge>
-                </td>
+      <!-- TABLA PRINCIPAL DE REGISTROS -->
+      <div class="table-container card-enterprise">
+        <div class="table-responsive">
+          <table class="m3-table">
+            <thead>
+              <tr>
+                <th>SEMÁFORO</th>
+                <th>SOLICITUD</th>
+                <th class="col-area-header">ÁREA TURNADA</th>
+                <th>RECORDATORIO</th>
+                <th>DÍAS</th>
+                <th>FECHA VENCIMIENTO</th>
+                <th>ESTATUS</th>
+                <th class="col-tema-header">TEMA</th>
+                <th>OBSERVACIONES</th>
+                <th>IP / DP</th>
+                <th>FOLIO</th>
+                <th>FECHA ENTRADA</th>
+                <th>FECHA TÉRMINO</th>
+                <th class="text-right">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of store.filteredRequests(); track item.id) {
+                <tr [class.urgent-row]="item.showAlertIcon">
+                  <!-- 1. SEMÁFORO -->
+                  <td>
+                    <app-priority-badge 
+                      [priorityKey]="item.priorityKey || 'NORMAL'" 
+                      [message]="item.priorityLabel || 'Normal'" 
+                      [colorHex]="item.visualColorHex || '#6B7280'"
+                      [showAlertIcon]="item.showAlertIcon || false">
+                    </app-priority-badge>
+                  </td>
 
-                <!-- 2. SOLICITUD -->
-                <td>
-                  <div class="request-main-info" (click)="viewDetail(item.id)">
-                    <span class="request-title">{{ item.solicitud }}</span>
-                    @if (item.tags && item.tags.length > 0) {
-                      <app-tag-list [tags]="item.tags"></app-tag-list>
-                    }
-                  </div>
-                </td>
-
-                <!-- 3. ÁREA TURNADA -->
-                <td>
-                  <span class="area-tag">{{ getAreaName(item.areaId) }}</span>
-                </td>
-
-                <!-- 4. RECORDATORIO -->
-                <td>
-                  <span class="reminder-text" [style.color]="item.visualColorHex">
-                    {{ item.badgeMessage || 'Sin alerta' }}
-                  </span>
-                </td>
-
-                <!-- 5. DÍAS -->
-                <td>
-                  <span class="days-text" [class.negative]="(item.diasRestantes || 0) < 0">
-                    {{ item.diasRestantes }}d
-                  </span>
-                </td>
-
-                <!-- 6. FECHA DE VENCIMIENTO -->
-                <td class="date-text font-bold">{{ item.fechaVencimiento }}</td>
-
-                <!-- 7. ESTATUS -->
-                <td>
-                  <app-status-chip [statusId]="item.estatusId"></app-status-chip>
-                </td>
-
-                <!-- 8. TEMA -->
-                <td class="tema-text">{{ item.tema }}</td>
-
-                <!-- 9. OBSERVACIONES -->
-                <td>
-                  @if (item.observaciones) {
-                    <div class="obs-cell" [title]="item.observaciones">
-                      <span class="obs-dot">🔴</span>
-                      <span class="obs-snippet">{{ item.observaciones }}</span>
+                  <!-- 2. SOLICITUD -->
+                  <td>
+                    <div class="request-main-info" (click)="viewDetail(item.id)">
+                      <span class="request-title">{{ item.solicitud }}</span>
+                      @if (item.tags && item.tags.length > 0) {
+                        <app-tag-list [tags]="item.tags"></app-tag-list>
+                      }
                     </div>
-                  } @else {
-                    <span class="text-muted">-</span>
-                  }
-                </td>
+                  </td>
 
-                <!-- 10. IP / DP -->
-                <td>
-                  @if (isDatosPersonales(item.ipDp)) {
-                    <span class="ip-dp-badge dp-tag" title="DATOS PERSONALES">DATOS PERSONALES</span>
-                  } @else if (isAmbos(item.ipDp)) {
-                    <span class="ip-dp-badge both-tag" title="INFORMACIÓN PÚBLICA Y DATOS PERSONALES">IP / DP</span>
-                  } @else {
-                    <span class="ip-dp-badge ip-tag" title="INFORMACIÓN PÚBLICA">INFORMACIÓN PÚBLICA</span>
-                  }
-                </td>
+                  <!-- 3. ÁREA TURNADA -->
+                  <td>
+                    <span class="area-tag">{{ getAreaName(item.areaId) }}</span>
+                  </td>
 
-                <!-- 11. FOLIO -->
-                <td class="col-folio" (click)="viewDetail(item.id)">{{ item.folio }}</td>
+                  <!-- 4. RECORDATORIO -->
+                  <td>
+                    <span class="reminder-text" [style.color]="item.visualColorHex">
+                      {{ item.badgeMessage || 'Sin alerta' }}
+                    </span>
+                  </td>
 
-                <!-- 12. FECHA ENTRADA -->
-                <td class="date-text">{{ item.fechaEntrada }}</td>
+                  <!-- 5. DÍAS -->
+                  <td>
+                    <span class="days-badge" [class.negative]="(item.diasRestantes || 0) < 0">
+                      {{ item.diasRestantes }}d
+                    </span>
+                  </td>
 
-                <!-- 13. FECHA TÉRMINO -->
-                <td class="date-text font-bold text-success">
-                  {{ item.fechaTermino || '-' }}
-                </td>
+                  <!-- 6. FECHA DE VENCIMIENTO -->
+                  <td class="date-text font-bold">{{ formatDateDdMmYyyy(item.fechaVencimiento) }}</td>
 
-                <!-- 14. ACCIONES -->
-                <td class="text-right">
-                  <button mat-icon-button [matMenuTriggerFor]="actionMenu" class="action-btn">
-                    <span class="material-icons">more_vert</span>
-                  </button>
+                  <!-- 7. ESTATUS -->
+                  <td>
+                    <app-status-chip [statusId]="item.estatusId"></app-status-chip>
+                  </td>
 
-                  <mat-menu #actionMenu="matMenu">
-                    <button mat-menu-item (click)="viewDetail(item.id)">
-                      <span class="material-icons">visibility</span> Ver Detalle & Timeline
+                  <!-- 8. TEMA -->
+                  <td class="tema-text">{{ item.tema }}</td>
+
+                  <!-- 9. OBSERVACIONES -->
+                  <td>
+                    @if (item.observaciones) {
+                      <div class="obs-cell" [title]="item.observaciones">
+                        <span class="obs-dot">🔴</span>
+                        <span class="obs-snippet">{{ item.observaciones }}</span>
+                      </div>
+                    } @else {
+                      <span class="text-muted">-</span>
+                    }
+                  </td>
+
+                  <!-- 10. IP / DP -->
+                  <td>
+                    @if (isDatosPersonales(item.ipDp)) {
+                      <span class="ip-dp-badge dp-tag" title="DATOS PERSONALES">DATOS PERSONALES</span>
+                    } @else if (isAmbos(item.ipDp)) {
+                      <span class="ip-dp-badge both-tag" title="INFORMACIÓN PÚBLICA Y DATOS PERSONALES">IP / DP</span>
+                    } @else {
+                      <span class="ip-dp-badge ip-tag" title="INFORMACIÓN PÚBLICA">INFORMACIÓN PÚBLICA</span>
+                    }
+                  </td>
+
+                  <!-- 11. FOLIO -->
+                  <td class="col-folio" (click)="viewDetail(item.id)">{{ item.folio }}</td>
+
+                  <!-- 12. FECHA ENTRADA -->
+                  <td class="date-text">{{ formatDateDdMmYyyy(item.fechaEntrada) }}</td>
+
+                  <!-- 13. FECHA TÉRMINO -->
+                  <td class="date-text font-bold text-success">
+                    {{ formatDateDdMmYyyy(item.fechaTermino) || '-' }}
+                  </td>
+
+                  <!-- 14. ACCIONES -->
+                  <td class="text-right">
+                    <button mat-icon-button [matMenuTriggerFor]="actionMenu" class="action-btn">
+                      <span class="material-icons">more_vert</span>
                     </button>
 
-                    @if (authService.hasPermission('editar_solicitud')) {
-                      <button mat-menu-item (click)="openEditModal(item)">
-                        <span class="material-icons">edit</span> Editar Solicitud
+                    <mat-menu #actionMenu="matMenu">
+                      <button mat-menu-item (click)="viewDetail(item.id)">
+                        <span class="material-icons">visibility</span> Ver Detalle & Timeline
                       </button>
-                    }
 
-                    @if (authService.hasPermission('cambiar_estatus')) {
-                      <div class="menu-divider"></div>
-                      <div class="menu-header">Cambiar Estatus</div>
-                      @for (st of configService.config().statuses; track st.id) {
-                        <button mat-menu-item (click)="changeStatus(item.id, st.id)">
-                          <span class="status-dot" [style.background-color]="st.colorHex"></span>
-                          <span>{{ st.nombre }}</span>
+                      @if (authService.hasPermission('editar_solicitud')) {
+                        <button mat-menu-item (click)="openEditModal(item)">
+                          <span class="material-icons">edit</span> Editar Solicitud
                         </button>
                       }
-                    }
 
-                    @if (authService.hasPermission('eliminar_solicitud')) {
-                      <div class="menu-divider"></div>
-                      <button mat-menu-item (click)="deleteRequest(item)" class="text-danger">
-                        <span class="material-icons">delete</span> Eliminar
-                      </button>
-                    }
-                  </mat-menu>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="14" class="empty-table">
-                  <span class="material-icons empty-icon">search_off</span>
-                  <p>No se encontraron solicitudes que coincidan con los filtros aplicados.</p>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+                      @if (authService.hasPermission('cambiar_estatus')) {
+                        <div class="menu-divider"></div>
+                        <div class="menu-header">Cambiar Estatus</div>
+                        @for (st of configService.config().statuses; track st.id) {
+                          <button mat-menu-item (click)="changeStatus(item.id, st.id)">
+                            <span class="status-dot" [style.background-color]="st.colorHex"></span>
+                            <span>{{ st.nombre }}</span>
+                          </button>
+                        }
+                      }
+
+                      @if (authService.hasPermission('eliminar_solicitud')) {
+                        <div class="menu-divider"></div>
+                        <button mat-menu-item (click)="deleteRequest(item)" class="text-danger">
+                          <span class="material-icons">delete</span> Eliminar
+                        </button>
+                      }
+                    </mat-menu>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="14" class="empty-table">
+                    <span class="material-icons empty-icon">search_off</span>
+                    <p>No se encontraron solicitudes que coincidan con los filtros aplicados.</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `,
   styles: [`
     .list-page {
-      padding: 24px;
+      padding: 28px;
     }
     .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .page-title {
       font-size: 24px;
@@ -267,45 +269,31 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       color: #64748B;
       margin: 0;
     }
-    .btn-primary {
-      background: #3B82F6;
-      color: #FFFFFF;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-      transition: background 0.15s ease;
-    }
-    .btn-primary:hover {
-      background: #2563EB;
-    }
     .filter-toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 16px;
-      background: #FFFFFF;
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      border: 1px solid #E2E8F0;
+      padding: 16px 20px;
+      margin-bottom: 24px;
       flex-wrap: wrap;
     }
     .search-box {
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: #F1F5F9;
-      padding: 8px 14px;
-      border-radius: 10px;
+      gap: 10px;
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      padding: 9px 16px;
+      border-radius: 12px;
       flex: 1;
-      min-width: 260px;
+      min-width: 280px;
+      transition: all 0.2s ease;
+    }
+    .search-box:focus-within {
+      background: #FFFFFF;
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
     .search-icon {
       color: #94A3B8;
@@ -326,30 +314,31 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       flex-wrap: wrap;
     }
     .filter-group select {
-      padding: 8px 12px;
-      border-radius: 8px;
+      padding: 9px 14px;
+      border-radius: 10px;
       border: 1px solid #CBD5E1;
       background: #FFFFFF;
-      font-size: 13px;
+      font-size: 13.5px;
+      font-weight: 600;
       color: #334155;
       outline: none;
+      transition: all 0.2s ease;
+    }
+    .filter-group select:focus {
+      border-color: #2563EB;
     }
     .btn-reset {
       background: #F1F5F9;
       border: 1px solid #CBD5E1;
-      padding: 8px;
-      border-radius: 8px;
+      padding: 9px;
+      border-radius: 10px;
       cursor: pointer;
       color: #64748B;
       display: flex;
       align-items: center;
     }
     .table-container {
-      background: #FFFFFF;
-      border-radius: 14px;
-      border: 1px solid #E2E8F0;
-      overflow-x: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      overflow: hidden;
     }
     .m3-table {
       width: 100%;
@@ -361,7 +350,7 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       color: #475569;
       font-weight: 800;
       text-align: left;
-      padding: 14px 14px;
+      padding: 16px 14px;
       border-bottom: 2px solid #E2E8F0;
       white-space: nowrap;
       font-size: 11px;
@@ -376,9 +365,12 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       max-width: 320px;
     }
     .m3-table td {
-      padding: 12px 14px;
+      padding: 14px 14px;
       border-bottom: 1px solid #F1F5F9;
       vertical-align: middle;
+    }
+    .m3-table tr {
+      transition: background 0.15s ease;
     }
     .m3-table tr:hover {
       background: #F8FAFC;
@@ -388,7 +380,7 @@ import { RequestFormComponent } from '../request-form/request-form.component';
     }
     .col-folio {
       font-weight: 800;
-      color: #3B82F6;
+      color: #2563EB;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -396,13 +388,13 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       cursor: pointer;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       min-width: 180px;
     }
     .request-title {
       font-weight: 700;
       color: #0F172A;
-      font-size: 13px;
+      font-size: 13.5px;
     }
     .area-tag {
       font-size: 11px;
@@ -423,17 +415,22 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       white-space: nowrap;
     }
     .date-text {
-      font-size: 12px;
+      font-size: 12.5px;
       color: #475569;
       white-space: nowrap;
     }
     .font-bold { font-weight: 700; }
-    .days-text {
+    .days-badge {
+      font-size: 12px;
       font-weight: 800;
-      color: #16A34A;
+      color: #059669;
+      background: #D1FAE5;
+      padding: 2px 8px;
+      border-radius: 6px;
     }
-    .days-text.negative {
+    .days-badge.negative {
       color: #DC2626;
+      background: #FEE2E2;
     }
     .tema-text {
       font-size: 12px;
@@ -454,7 +451,7 @@ import { RequestFormComponent } from '../request-form/request-form.component';
     .obs-dot { font-size: 10px; }
     .obs-snippet {
       font-size: 12px;
-      color: #7F1D1D;
+      color: #991B1B;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -482,7 +479,7 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       border: 1px solid #C7D2FE;
     }
     .text-muted { color: #94A3B8; }
-    .text-success { color: #16A34A; }
+    .text-success { color: #059669; }
     .empty-table {
       text-align: center;
       padding: 40px !important;
@@ -513,6 +510,15 @@ export class RequestListComponent {
   private dialog = inject(MatDialog);
 
   public filterState = this.store.filterState;
+
+  formatDateDdMmYyyy(dateStr?: string | null): string {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+  }
 
   onSearchChange(q: string) {
     this.store.updateFilters({ searchQuery: q });

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -11,41 +11,41 @@ import { AuthService } from '../../../core/services/auth.service';
     <nav class="sidebar-nav">
       <div class="nav-section-title">PRINCIPAL</div>
       
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="onItemClick()">
         <span class="material-icons icon">dashboard</span>
         <span class="label">Dashboard</span>
       </a>
 
-      <a routerLink="/requests" routerLinkActive="active" class="nav-item">
+      <a routerLink="/requests" routerLinkActive="active" class="nav-item" (click)="onItemClick()">
         <span class="material-icons icon">table_chart</span>
         <span class="label">Listado Principal</span>
       </a>
 
-      <a routerLink="/kanban" routerLinkActive="active" class="nav-item">
+      <a routerLink="/kanban" routerLinkActive="active" class="nav-item" (click)="onItemClick()">
         <span class="material-icons icon">view_kanban</span>
         <span class="label">Tablero Kanban</span>
       </a>
 
-      <a routerLink="/calendar" routerLinkActive="active" class="nav-item">
+      <a routerLink="/calendar" routerLinkActive="active" class="nav-item" (click)="onItemClick()">
         <span class="material-icons icon">calendar_month</span>
         <span class="label">Calendario</span>
       </a>
 
       <div class="nav-section-title">HERRAMIENTAS</div>
 
-      <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+      <a routerLink="/reports" routerLinkActive="active" class="nav-item" (click)="onItemClick()">
         <span class="material-icons icon">assessment</span>
         <span class="label">Reportes y Analítica</span>
       </a>
 
-      <a routerLink="/attachments" routerLinkActive="active" class="nav-item">
+      <a routerLink="/attachments" routerLinkActive="active" class="nav-item" (click)="onItemClick()">
         <span class="material-icons icon">folder_shared</span>
         <span class="label">Adjuntos Google Drive</span>
       </a>
 
       <div class="nav-section-title">ADMINISTRACIÓN</div>
 
-      <a routerLink="/settings" routerLinkActive="active" class="nav-item">
+      <a routerLink="/settings" routerLinkActive="active" class="nav-item" (click)="onItemClick()">
         <span class="material-icons icon">settings</span>
         <span class="label">Configuración Sistema</span>
       </a>
@@ -56,7 +56,7 @@ import { AuthService } from '../../../core/services/auth.service';
       width: 240px;
       background: var(--sidebar-bg, #F8FAFC);
       border-right: 1px solid var(--border-color, #E2E8F0);
-      height: calc(100vh - 60px);
+      height: 100%;
       padding: 16px 12px;
       display: flex;
       flex-direction: column;
@@ -100,4 +100,9 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class SidebarComponent {
   public authService = inject(AuthService);
+  @Output() closeSidebar = new EventEmitter<void>();
+
+  onItemClick() {
+    this.closeSidebar.emit();
+  }
 }

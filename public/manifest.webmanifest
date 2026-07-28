@@ -1,0 +1,18 @@
+{
+  "name": "Sistema Enterprise de Seguimiento de Solicitudes",
+  "short_name": "Recordatorios",
+  "description": "Sistema Enterprise de Seguimiento de Solicitudes y Alertas de Vencimiento",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

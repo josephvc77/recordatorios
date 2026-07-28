@@ -88,7 +88,7 @@ import { RequestFormComponent } from '../request-form/request-form.component';
         </div>
       </div>
 
-      <!-- TABLA PRINCIPAL DE REGISTROS -->
+      <!-- TABLA PRINCIPAL DE REGISTROS CON SCROLL HORIZONTAL SUAVE -->
       <div class="table-container card-enterprise">
         <div class="table-responsive">
           <table class="m3-table">
@@ -337,11 +337,24 @@ import { RequestFormComponent } from '../request-form/request-form.component';
       display: flex;
       align-items: center;
     }
+
+    /* CONTENEDOR CON DESPLAZAMIENTO HORIZONTAL (SCROLL) SUAVE ACTIVO */
     .table-container {
-      overflow: hidden;
+      width: 100%;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 16px;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+    }
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
     }
     .m3-table {
       width: 100%;
+      min-width: 1200px;
       border-collapse: collapse;
       font-size: 13px;
     }

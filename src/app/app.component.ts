@@ -13,12 +13,12 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
       <app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
 
       <div class="main-body">
-        <!-- SIDEBAR CONTAINER DESLIZABLE TANTO EN DESKTOP COMO MÓVIL -->
+        <!-- SIDEBAR CONTAINER CON ANCHO DINÁMICO RESTRUCTURADO (SIN TRASLAPES) -->
         <div class="sidebar-wrapper" [class.open]="sidebarOpen">
           <app-sidebar (closeSidebar)="closeSidebarMobile()"></app-sidebar>
         </div>
 
-        <!-- FONDO OSCURO CON BLUR PARA MÓVIL -->
+        <!-- FONDO OSCURO CON BLUR SOLO EN MÓVIL -->
         @if (sidebarOpen) {
           <div class="mobile-backdrop" (click)="toggleSidebar()"></div>
         }
@@ -41,26 +41,27 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
       flex: 1;
       position: relative;
       overflow: hidden;
+      width: 100%;
     }
 
-    /* COMPORTAMIENTO DESKTOP (> 768px) */
+    /* COMPORTAMIENTO ESCRITORIO (> 768px): FLEX CONTAINER PERFECTO */
     .sidebar-wrapper {
-      position: relative;
-      z-index: 90;
+      flex-shrink: 0;
       width: 250px;
-      margin-left: -250px;
+      height: calc(100vh - 64px);
+      overflow: hidden;
+      transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+      z-index: 90;
+    }
+    .sidebar-wrapper:not(.open) {
+      width: 0 !important;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .sidebar-wrapper.open {
-      margin-left: 0;
-      opacity: 1;
-      pointer-events: auto;
     }
 
     .content-area {
       flex: 1;
+      min-width: 0;
       overflow-y: auto;
       height: calc(100vh - 64px);
     }
@@ -68,19 +69,23 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
       display: none;
     }
 
-    /* COMPORTAMIENTO MÓVIL (<= 768px) */
+    /* COMPORTAMIENTO MÓVIL (<= 768px): DRAWER OVERLAY CON TRASLACIÓN SUAVE */
     @media (max-width: 768px) {
       .sidebar-wrapper {
         position: fixed;
         top: 64px;
-        left: -260px;
+        left: 0;
         bottom: 0;
-        margin-left: 0 !important;
-        opacity: 1 !important;
+        width: 250px !important;
+        height: calc(100vh - 64px);
         z-index: 999;
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 1 !important;
+        pointer-events: auto !important;
       }
       .sidebar-wrapper.open {
-        left: 0 !important;
+        transform: translateX(0) !important;
         box-shadow: 4px 0 24px rgba(15, 23, 42, 0.35);
       }
       .mobile-backdrop {
